@@ -12,10 +12,10 @@ public class DataStorage {
     private ArrayList<Row> leftTable;
     private ArrayList<Row> rightTable;
 
-    public DataStorage(String leftTablePath, String rightTablePath)
+    public DataStorage()
     {
-        leftTable = FileParser.openFile(leftTablePath);
-        rightTable = FileParser.openFile(rightTablePath);
+        leftTable = new ArrayList<>();
+        rightTable = new ArrayList<>();
     }
 
     public ArrayList<Row> getLeftTable() {
@@ -26,9 +26,22 @@ public class DataStorage {
         return rightTable;
     }
 
+    public void openFiles(String leftTablePath, String rightTablePath)
+    {
+        leftTable = FileParser.openFile(leftTablePath);
+        rightTable = FileParser.openFile(rightTablePath);
+    }
+
     public void printRightOuterJoinWithArrayList()
     {
         printResults(Query.rightOuterJoinWithArrayList(leftTable, rightTable), "ArrayList");
+    }
+
+    public void printRightOuterJoinWithSortedLinkedList()
+    {
+        printResults(Query.rightOuterJoinWithSortedLinkedList(Converter.arrayListToSortedLinkedList(leftTable),
+                                                              Converter.arrayListToSortedLinkedList(rightTable)),
+                "Sorted LinkedList");
     }
 
     public void printRightOuterJoinWithHashMap()
@@ -41,7 +54,7 @@ public class DataStorage {
     private void printResults(List<Result> results, String type)
     {
         results.sort(Comparator.naturalOrder());
-        System.out.println("Results using " + type);
+        System.out.println("Results with " + type + ":");
         System.out.printf("%-15.15s\t%-15.15s\t%-15.15s\n", "ID", "LEFT_VALUE", "RIGHT_VALUE");
 
         for (Result res : results)

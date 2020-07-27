@@ -37,19 +37,53 @@ public class Query {
 
         for (Map.Entry<Long, List<String>> rightRow : rightTable.entrySet())
         {
-            List<String> leftVals = leftTable.get(rightRow.getKey());
+            List<String> leftVals = leftTable.getOrDefault(rightRow.getKey(), List.of("NULL"));
 
-            if (leftVals == null)
+            for (String rightVal : rightRow.getValue())
+                for (String leftVal : leftVals)
+                    results.add(new Result(rightRow.getKey(), leftVal, rightVal));
+        }
+
+        return results;
+    }
+
+    public static List<Result> rightOuterJoinWithSortedLinkedList(LinkedList<Row> leftTable, LinkedList<Row> rightTable)
+    {
+        List<Result> results = new ArrayList<>();
+
+        ListIterator<Row> leftIter = leftTable.listIterator();
+        Row leftRow = null;
+        Row rightRowPrev = null;
+        int matches = 0;
+
+        for (Row rightRow : rightTable)
+        {
+            if (matches > 0 && rightRow.getId().equals(rightRowPrev.getId()))
             {
-                for (String rightVal : rightRow.getValue())
-                    results.add(new Result(rightRow.getKey(), "NULL", rightVal));
+                for (int i = matches; i >= 0; i--)
+                    if (leftIter.hasPrevious()) leftRow = leftIter.previous();
+                leftIter.next();
             }
-            else
-            {
-                for (String rightVal : rightRow.getValue())
-                    for (String leftVal : leftVals)
-                        results.add(new Result(rightRow.getKey(), leftVal, rightVal));
-            }
+
+            matches = 0;
+            rightRowPrev = rightRow;
+
+            boolean prevResChecked = false;
+            do {
+                if ((leftRow == null || prevResChecked) && leftIter.hasNext())
+                    leftRow = leftIter.next();
+
+                if (leftRow != null && rightRow.getId().equals(leftRow.getId()))
+                {
+                    results.add(new Result(rightRow.getId(), leftRow.getValue(), rightRow.getValue()));
+                    matches++;
+                }
+
+                prevResChecked = true;
+            } while (leftIter.hasNext() && rightRow.getId().compareTo(leftRow.getId()) >= 0);
+
+            if (matches == 0)
+                results.add(new Result(rightRow.getId(), "NULL", rightRow.getValue()));
         }
 
         return results;

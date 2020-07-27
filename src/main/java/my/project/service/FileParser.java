@@ -47,7 +47,7 @@ public class FileParser {
             throw new IllegalArgumentException("Line doesn't match required format: <Целое число>,<Строка>");
 
         //Get id
-        id = Long.valueOf(data[0]);
+        id = Long.valueOf(data[0].trim());
 
         //Get value
         value = data[1].trim();

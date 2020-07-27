@@ -13,9 +13,11 @@ public class Main {
 
     private static void process(String leftTablePath, String rightTablePath)
     {
-        DataStorage ds = new DataStorage(leftTablePath, rightTablePath);
+        DataStorage ds = new DataStorage();
+        ds.openFiles(leftTablePath, rightTablePath);
         ds.printTables();
         ds.printRightOuterJoinWithArrayList();
+        ds.printRightOuterJoinWithSortedLinkedList();
         ds.printRightOuterJoinWithHashMap();
     }
 }

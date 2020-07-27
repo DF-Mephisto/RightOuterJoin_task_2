@@ -6,6 +6,13 @@ import java.util.*;
 
 public class Converter {
 
+    public static LinkedList<Row> arrayListToSortedLinkedList(ArrayList<Row> rows)
+    {
+        LinkedList<Row> res = new LinkedList<>(rows);
+        res.sort(Comparator.naturalOrder());
+        return res;
+    }
+
     public static HashMap<Long, List<String>> arrayListToHashMap(ArrayList<Row> rows)
     {
         HashMap<Long, List<String>> res = new HashMap<>();
@@ -26,5 +33,4 @@ public class Converter {
 
         return res;
     }
-
 }
